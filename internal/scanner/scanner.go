@@ -39,7 +39,7 @@ func (s *Scanner) AddTokenL(c string, kind int) {
 }
 
 func isAlpha(char byte) bool {
-	return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')
+	return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || char == '_'
 }
 
 func (s *Scanner) ScanToken() {
@@ -48,6 +48,27 @@ func (s *Scanner) ScanToken() {
 	case "+", "-", "*", "^", "(", ")", "[", "]", "{", "}", ",", ";", "#":
 		// Single character simplistic tokens
 		s.AddTokenL(c, token_type.StringToInt(c))
+	default:
+		if isAlpha(byte(c[0])) {
+			char := s.advance()
+			for isAlpha(byte(char[0])) && !s.AtEnd() {
+				char = s.advance()
+			}
+			lexeme := s.Source[s.Start:s.Pos]
+			token := token_type.Token{
+				Lexeme:  lexeme,
+				Literal: lexeme,
+				Kind:    token_type.IDENT,
+				TokenDebug: token_type.TokenDebug{
+					Line:  s.Line,
+					Start: s.Start,
+					End:   s.Pos,
+				},
+			}
+
+			s.Tokens = append(s.Tokens, token)
+		}
+
 	}
 }
 

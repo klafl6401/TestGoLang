@@ -1,5 +1,11 @@
 package main
 
-func main() {
+import "github.com/klafl6401/TestGoLang/internal/scanner"
 
+func main() {
+	newS := scanner.Scanner{
+		Source: "Asdf",
+	}
+
+	newS.Scan()
 }
