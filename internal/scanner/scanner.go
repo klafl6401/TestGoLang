@@ -34,6 +34,15 @@ func (s *Scanner) peek() string {
 	return string(s.Source[s.Pos])
 }
 
+func (s *Scanner) match(expected string) bool {
+	if s.AtEnd() || string(s.Source[s.Pos]) != expected {
+		return false
+	}
+	s.Pos++
+
+	return true
+}
+
 func (s *Scanner) AddTokenL(c string, kind int) {
 	token := token_type.Token{
 		Lexeme:  c,
@@ -103,7 +112,21 @@ func (s *Scanner) identifier() {
 		s.advance()
 	}
 	lexeme := s.Source[s.Start:s.Pos]
-	s.AddToken(lexeme, lexeme, token_type.IDENT)
+
+	switch lexeme {
+	case "let":
+		s.AddToken(lexeme, lexeme, token_type.LET)
+	case "log":
+		s.AddToken(lexeme, lexeme, token_type.LOG)
+	case "func":
+		s.AddToken(lexeme, lexeme, token_type.FUNC)
+	case "not":
+		s.AddToken(lexeme, lexeme, token_type.NOT)
+	case "and":
+		s.AddToken(lexeme, lexeme, token_type.AND)
+	default:
+		s.AddToken(lexeme, lexeme, token_type.IDENT)
+	}
 }
 
 func (s *Scanner) string() {
@@ -126,6 +149,30 @@ func (s *Scanner) ScanToken() {
 	case "+", "-", "*", "^", "(", ")", "[", "]", "{", "}", ",", ";", "#":
 		// Single character simplistic tokens
 		s.AddTokenL(c, token_type.StringToInt(c))
+	case "=":
+		if s.match("=") {
+			s.AddToken("==", "==", token_type.EQEQ)
+		} else {
+			s.AddTokenL("=", token_type.EQ)
+		}
+	case ">":
+		if s.match("=") {
+			s.AddToken(">=", ">=", token_type.GTE)
+		} else {
+			s.AddTokenL(">", token_type.GT)
+		}
+	case "<":
+		if s.match("=") {
+			s.AddToken("<=", "<=", token_type.LTE)
+		} else {
+			s.AddTokenL("<", token_type.LT)
+		}
+	case "!":
+		if s.match("=") {
+			s.AddToken("!=", "!=", token_type.NOTEQ)
+		} else {
+			s.AddTokenL("!", token_type.NOT)
+		}
 	case " ", "\r", "\t":
 	case "\n":
 		s.Line++
@@ -146,4 +193,5 @@ func (s *Scanner) Scan() {
 		s.Start = s.Pos
 		s.ScanToken()
 	}
+	s.AddToken("\000", "\000", token_type.EOF)
 }

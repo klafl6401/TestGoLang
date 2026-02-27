@@ -51,3 +51,33 @@ func TestString(t *testing.T) {
 	}
 	fmt.Printf("'%s' of %T length: %d\n", cToken.Literal, cToken.Literal, len(cToken.Lexeme))
 }
+
+func TestKeywords(t *testing.T) {
+	newS := scanner.Scanner{
+		Source: `let a`,
+	}
+
+	newS.Scan()
+
+	tokens := newS.Tokens
+	cToken := tokens[0]
+	if cToken.Literal != "let" {
+		t.Fatalf("Last Token is %v of %T, length: %d; wanting %v\n", cToken.Literal, cToken.Literal, len(cToken.Lexeme), "let")
+	}
+	fmt.Printf("'%s' of %T length: %d of kind %d\n", cToken.Literal, cToken.Literal, len(cToken.Lexeme), cToken.Kind)
+}
+
+func TestOperators(t *testing.T) {
+	newS := scanner.Scanner{
+		Source: `=`,
+	}
+
+	newS.Scan()
+
+	tokens := newS.Tokens
+	cToken := tokens[0]
+	if cToken.Literal != "=" {
+		t.Fatalf("Last Token is %v of %T, length: %d; wanting %v\n", cToken.Literal, cToken.Literal, len(cToken.Lexeme), "=")
+	}
+	fmt.Printf("'%s' of %T length: %d of kind %d\n", cToken.Literal, cToken.Literal, len(cToken.Lexeme), cToken.Kind)
+}
