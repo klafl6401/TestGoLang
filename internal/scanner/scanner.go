@@ -106,6 +106,20 @@ func (s *Scanner) identifier() {
 	s.AddToken(lexeme, lexeme, token_type.IDENT)
 }
 
+func (s *Scanner) string() {
+	for s.peek() != "\"" && !s.AtEnd() {
+		s.advance()
+	}
+	if s.peek() != "\"" {
+		log.Fatalf("Unterminated string %s", s.Source[s.Start:s.Pos])
+	} else if !s.AtEnd() {
+		s.advance()
+	}
+	lexeme := s.Source[s.Start:s.Pos]
+	literal := s.Source[s.Start+1 : s.Pos-1]
+	s.AddToken(lexeme, literal, token_type.STRING)
+}
+
 func (s *Scanner) ScanToken() {
 	c := s.advance()
 	switch c {
@@ -115,13 +129,14 @@ func (s *Scanner) ScanToken() {
 	case " ", "\r", "\t":
 	case "\n":
 		s.Line++
+	case "\"":
+		s.string()
 	default:
 		if isDigit(c) {
 			s.number()
 		} else if isAlpha(c) {
 			s.identifier()
 		}
-
 	}
 }
 

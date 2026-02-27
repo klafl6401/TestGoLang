@@ -36,3 +36,18 @@ func TestIdentifiers(t *testing.T) {
 	}
 	fmt.Printf("'%s' of %T length: %d\n", cToken.Literal, cToken.Literal, len(cToken.Lexeme))
 }
+
+func TestString(t *testing.T) {
+	newS := scanner.Scanner{
+		Source: `"This is a string"`,
+	}
+
+	newS.Scan()
+
+	tokens := newS.Tokens
+	cToken := tokens[0]
+	if cToken.Literal != "This is a string" {
+		t.Fatalf("Last Token is %v of %T, length: %d; wanting %v\n", cToken.Literal, cToken.Literal, len(cToken.Lexeme), "This is a string")
+	}
+	fmt.Printf("'%s' of %T length: %d\n", cToken.Literal, cToken.Literal, len(cToken.Lexeme))
+}
