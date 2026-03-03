@@ -1,6 +1,7 @@
 package scanner
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 
@@ -124,6 +125,24 @@ func (s *Scanner) identifier() {
 		s.AddToken(lexeme, lexeme, token_type.NOT)
 	case "and":
 		s.AddToken(lexeme, lexeme, token_type.AND)
+	case "or":
+		s.AddToken(lexeme, lexeme, token_type.OR)
+	case "return":
+		s.AddToken(lexeme, lexeme, token_type.RETURN)
+	case "if":
+		s.AddToken(lexeme, lexeme, token_type.IF)
+	case "while":
+		s.AddToken(lexeme, lexeme, token_type.WHILE)
+	case "else":
+		s.AddToken(lexeme, lexeme, token_type.ELSE)
+	case "class":
+		s.AddToken(lexeme, lexeme, token_type.CLASS)
+	case "true":
+		s.AddToken(lexeme, true, token_type.TRUE)
+	case "false":
+		s.AddToken(lexeme, false, token_type.FALSE)
+	case "nil", "null":
+		s.AddToken(lexeme, nil, token_type.NULL)
 	default:
 		s.AddToken(lexeme, lexeme, token_type.IDENT)
 	}
@@ -178,11 +197,21 @@ func (s *Scanner) ScanToken() {
 		s.Line++
 	case "\"":
 		s.string()
+	case "/":
+		if s.match("/") {
+			for s.peek() != "/n" && !s.AtEnd() {
+				s.advance()
+			}
+		} else {
+			s.AddTokenL("/", token_type.MULT)
+		}
 	default:
 		if isDigit(c) {
 			s.number()
 		} else if isAlpha(c) {
 			s.identifier()
+		} else {
+			fmt.Printf("Unexpected character: %v", c)
 		}
 	}
 }

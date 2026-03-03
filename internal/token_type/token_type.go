@@ -32,9 +32,20 @@ const (
 	LOG
 	LET
 	FUNC
+	RETURN
+	IF
+	FOR
+	WHILE
+	ELSE
+	CLASS
+
+	TRUE
+	FALSE
+	NULL
 
 	NOT // not
 	AND // and
+	OR
 
 	EOF
 )
