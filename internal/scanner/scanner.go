@@ -162,6 +162,28 @@ func (s *Scanner) string() {
 	s.AddToken(lexeme, literal, token_type.STRING)
 }
 
+func (s *Scanner) multiLineComment() {
+	for !s.AtEnd() {
+		switch s.peek() {
+		case "\n":
+			s.Line++
+		}
+
+		if s.peek() == "*" && !s.AtEnd() {
+			s.advance()
+			if s.match("/") {
+				// lexeme := s.Source[s.Start:s.Pos]
+				// s.AddToken(lexeme, lexeme, )
+			}
+			return
+		}
+		s.advance()
+	}
+	if s.AtEnd() && s.peek() != "/" {
+		log.Fatalf("Unterminated Multi-Line comment %s", s.Source[s.Start:s.Pos])
+	}
+}
+
 func (s *Scanner) ScanToken() {
 	c := s.advance()
 	switch c {
@@ -202,6 +224,8 @@ func (s *Scanner) ScanToken() {
 			for s.peek() != "/n" && !s.AtEnd() {
 				s.advance()
 			}
+		} else if s.match("*") {
+			s.multiLineComment()
 		} else {
 			s.AddTokenL("/", token_type.MULT)
 		}
